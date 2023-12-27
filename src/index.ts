@@ -25,7 +25,7 @@ type Compliance  = Policy | null;
 
 
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/status", (req: Request, res: Response) => {
   res.send("It is alive and breathing!");
 });
 
