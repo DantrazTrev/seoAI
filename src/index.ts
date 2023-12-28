@@ -45,17 +45,22 @@ app.post("/compliance-check", async (req: Request, res: Response) => {
 
 
     const policyRules = await runPrompt(createPromptRules(policyText));
-    // if(!policyRules) {
-    //     res.status(500).send("Something went wrong with the compliance check");
-    //     return;
-    // }
+   
+    if(!policyRules) {
+        res.status(500).send("Something went wrong with parsing the policy. Please try again with a different policy.");
+        return;
+    }
 
 
     const complianceCheck  = await runPrompt(createPromptCompliance(policyRules||"",pageContext));
 
-    console.log(complianceCheck)
+    if(!complianceCheck) {
+        res.status(500).send("Something went wrong with parsing the page. Please try again with a different page.");
+        return;
+    }
 
-    res.send("We've got your request for compliance check! We'll get back to you soon!")
+
+    res.send(complianceCheck)
 
 
 
