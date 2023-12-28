@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import { getHTML } from "./lib/domparser";
-
+import {  createPromptCompliance, createPromptRules } from "./lib/prompt";
+import runPrompt from "./lib/openai";
 dotenv.config();
 const app = express();
 app.use(express.json())
@@ -39,8 +40,20 @@ app.post("/compliance-check", async (req: Request, res: Response) => {
     }
 
 
-    const pageContext = getHTML(page as WebPage);
-    const policyText = policy?.text ? policy.text : getHTML(policy as WebPage);
+    const pageContext = await getHTML(page as WebPage);
+    const policyText = policy?.text ? policy.text : await getHTML(policy as WebPage);
+
+
+    const policyRules = await runPrompt(createPromptRules(policyText));
+    // if(!policyRules) {
+    //     res.status(500).send("Something went wrong with the compliance check");
+    //     return;
+    // }
+
+
+    const complianceCheck  = await runPrompt(createPromptCompliance(policyRules||"",pageContext));
+
+    console.log(complianceCheck)
 
     res.send("We've got your request for compliance check! We'll get back to you soon!")
 

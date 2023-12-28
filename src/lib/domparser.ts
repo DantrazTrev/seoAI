@@ -16,11 +16,12 @@ export const getHTML = async(item:WebPage) => {
     // If item has a url, fetch it
     
     const rawHTML = await fetchURL(item.url);
-    const parsedContent = parseHTML(rawHTML)
+    const parsedContent = parseHTML(rawHTML);
+    return parsedContent;
 
 }
 
- const parseHTML = async (html:any,textOnly=true) => {
+ const parseHTML =  (html:any,textOnly=true) => {
    
     // Parse the HTML to remove any scripts, styles, etc.
 
@@ -28,9 +29,13 @@ export const getHTML = async(item:WebPage) => {
     const parsedContent = load(html);
     parsedContent('script').remove();
     parsedContent('style').remove();
+    parsedContent('noscript').remove();
 
     // Extract text content (ignoring HTML tags)
-    const textContent = parsedContent('body').html()
+    const textContent = parsedContent('body').removeClass().text();
+
+
+    return textContent || "";
 
 
 }
